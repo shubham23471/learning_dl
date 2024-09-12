@@ -91,15 +91,24 @@ class BigramLanguageModel(nn.Module):
     # each token directly reads off the logits for the next token from
     # a lookup table
     self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
+    # so far. we have taken these chars and encoded them based on identity inside
+    # the idx. we will encode the position as well identity of these tokens. 
+    self.position_embedding_table = nn.Embedding(block_size, n_embd)
+    # so each postion from 0 to block_size - 1 gets it's own embeding vector
+
     # because we added `n_embd` token_embedding_table(idx) will now return token_emb
     # and we now need linear layer to go from token_emb to logits
     self.lm_head = nn.Linear(n_embd, vocab_size) # lm_head: langurage modeling head
 
   def forward(self, idx, targets=None):
+    B, T = idx.shape
     # idx and targets are both (B, T) tensor of integers
     tok_emb = self.token_embedding_table(idx) # (B, T, C)
-    logits = self.lm_head(tok_emb) # (B, T, vocab_size)
-
+    pos_emb = self.position_embedding_table(torch.arange(T, device=device)) # (T, C)
+    x = tok_emb + pos_emb 
+    # x hold two things. token identity and the position at these token occur. 
+    logits = self.lm_head(x) # (B, T, vocab_si ze)
+ 
     if targets is None:
       loss = None
     else:
