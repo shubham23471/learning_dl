@@ -192,3 +192,31 @@ Cow
 **OBSERVATIONS**
 - loss is down from 2.1024 to 2.0988. so slight improvement after adding the batch norm. 
 - They will help more if we have bigger and deeper network 
+======================================================
+            scaled up model on Google Colab
+======================================================
+
+Using :cuda
+step 0: train loss 4.2849, val loss 4.2823
+step 500: train loss 2.0112, val loss 2.0971
+step 1000: train loss 1.6021, val loss 1.7830
+step 1500: train loss 1.4412, val loss 1.6396
+step 2000: train loss 1.3430, val loss 1.5724
+step 2500: train loss 1.2809, val loss 1.5330
+step 3000: train loss 1.2268, val loss 1.5094
+step 3500: train loss 1.1824, val loss 1.4881
+step 4000: train loss 1.1475, val loss 1.4869
+step 4500: train loss 1.1108, val loss 1.4805
+--------
+
+But with prison: I will stead with you.
+
+ISABELLA:
+Cars serve you thank for's ar a wife:
+And see thou wast to Harle, no:
+Ah, have what you speake upon your sister,
+Than your honour ancess, so sovereign along.
+
+LADY CLIFF:
+How shouldst thou lie and soonest in heapted,
+That you stead'st a mystery to f

@@ -8,16 +8,20 @@ import os
 ### TODO: Check how thse variables are accessed by the class without passing 
 # as they are not defined as global variable
 
-batch_size = 32 # how many independent sequence will we process in parallel
-block_size = 8 # what is the `maximum` context length for prediction?
+batch_size = 64 # how many independent sequence will we process in parallel
+block_size = 256 # what is the `maximum` context length for prediction?
 max_iters = 5000
 eval_interval = 500
-learning_rate = 1e-3
+learning_rate = 3e-4
 eval_iters = 200
-n_embd = 32 # num of embeding dimensions
+n_embd = 384 # num of embeding dimensions
 # to enable debugging on cuda
 # os.environ["TORCH_USE_CUDA_DSA"] = "1"
 # os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+
+n_head = 6
+n_layer = 6 
+dropout = 0.2
 
 
 # device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -93,6 +97,7 @@ class Head(nn.Module):
     self.query = nn.Linear(n_embd, head_size, bias=False)
     self.value = nn.Linear(n_embd, head_size, bias=False)
     self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size)))
+    self.dropout = nn.Dropout(dropout)
   
   def forward(self, x):
      B, T, C  = x.shape
@@ -103,6 +108,7 @@ class Head(nn.Module):
      wei = q @ k.transpose(-2, -1) * C ** -0.5 # (B, T, C) @ (B, C, T) --> (B, T, T)
      wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf')) # (B, T, T)
      wei = F.softmax(wei, dim=-1) # (B, T, T)
+     wei = self.dropout(wei)
 
      # perfom the weighted aggregation of the values
      v = self.value(x) # (B, T, C)
@@ -116,12 +122,12 @@ class MultiHeadAttention(nn.Module):
       self.heads = nn.ModuleList([Head(head_size) for _ in range(num_heads)])
       # projections : are the part of implementing the residuals
       self.proj = nn.Linear(n_embd, n_embd)
+      self.dropout = nn.Dropout(dropout)
   
   def forward(self, x):
       out = torch.cat([h(x) for h  in self.heads], dim=-1) # concat over C dim
-      out = self.proj(out) # here we apply the projection on the output of self-attention
-      # so if you think, projection is just the linear transformation of this layer
-      # so this project layer going back to the residual pathway
+      out = self.dropout(self.proj(out))
+      
       return out 
 
 class FeedFoward(nn.Module):
@@ -136,6 +142,7 @@ class FeedFoward(nn.Module):
          nn.Linear(n_embd, 4 * n_embd),
          nn.ReLU(),
          nn.Linear(4 * n_embd, n_embd),
+         nn.Dropout(dropout),
       )
     # the second nn.Linear(n_embd, n_embd) is the projection layer going back to the pathway
    def forward(self, x):
@@ -176,25 +183,10 @@ class BigramLanguageModel(nn.Module):
     # the idx. we will encode the position as well identity of these tokens. 
     self.position_embedding_table = nn.Embedding(block_size, n_embd)
     # so each postion from 0 to block_size - 1 gets it's own embeding vector
+    # n_layer: how many layers of block we are doing to have
+    self.blocks = nn.Sequential(*[Block(n_embd, n_head=n_head) for _ in range(n_layer)])
+    self.ln_f = nn.LayerNorm(n_embd) # final layer norm
 
-    self.blocks = nn.Sequential(
-       Block(n_embd, n_head=4),
-       Block(n_embd, n_head=4),
-       Block(n_embd, n_head=4), 
-       nn.LayerNorm(n_embd), 
-    )
-    # we choose n_head = 4, so the head_size can come out to be 8 as n_embd = 32
-    # this how transform structures the sizes. 
-
-    # ======= before implementing block logic
-    # self.sa_head = Head(n_embd)
-    # self.sa_heads = MultiHeadAttention(4, n_embd//4) # i.e 4 heads of 8 dimensional self-attention
-    # instead of 1 we not have 4 communication channel in parallel
-
-    # self.ffwd = FeedFoward(n_embd)
-    # because we added `n_embd` token_embedding_table(idx) will now return token_emb
-    # and we now need linear layer to go from token_emb to logits
-    # ======= before implementing block logic
     self.lm_head = nn.Linear(n_embd, vocab_size) # lm_head: langurage modeling head
 
   def forward(self, idx, targets=None):
@@ -202,15 +194,11 @@ class BigramLanguageModel(nn.Module):
     # idx and targets are both (B, T) tensor of integers
     tok_emb = self.token_embedding_table(idx) # (B, T, C)
     pos_emb = self.position_embedding_table(torch.arange(T, device=device)) # (T, C)
-    x = tok_emb + pos_emb # x hold two things. token identity and the position at these token occur.
-    x = self.blocks(x)
+    x = tok_emb + pos_emb # x hold two things. token identity and the position at these token occur. 
+    x = self.blocks(x) # (B, T, C )
+    x = self.ln_f(x) # (B, T, C )
     
-    # ======= before implementing block logic
-    # x = self.sa_head(x) # apply one head of self-attention. (B, T, C)
-    # x = self.sa_heads(x)
-    # x = self.ffwd(x) # (B, T, C)
-    # ======= before implementing block logic
-
+    
     logits = self.lm_head(x) # (B, T, vocab_size)
  
     if targets is None:
