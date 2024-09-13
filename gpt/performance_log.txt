@@ -96,3 +96,35 @@ I ork sak's willl eger aepale ganed ay wouce
 song thy in noduace being uliths tot upiord--mard meme the fles,
 Tharr, leanven-ty's thy on it in weancepte, digus I the sou
 --------
+======================================================
+            After implementing the block
+======================================================
+Using :cpu
+step 0: train loss 4.2116, val loss 4.2078
+step 500: train loss 3.1045, val loss 3.1069
+step 1000: train loss 2.7325, val loss 2.7215
+step 1500: train loss 2.5818, val loss 2.5698
+step 2000: train loss 2.4903, val loss 2.5037
+step 2500: train loss 2.4491, val loss 2.4374
+step 3000: train loss 2.3953, val loss 2.4151
+step 3500: train loss 2.3749, val loss 2.3854
+step 4000: train loss 2.3549, val loss 2.3395
+step 4500: train loss 2.3152, val loss 2.3289
+--------
+
+thase he gatak an hay havis youf the lerdll what riveven:
+I yow boncis ferge sate ceasace realverals you, thin indt do modes thoce and ose I! homome. DISNERN:
+Thins thay srimes foorw.
+
+MOIIS:
+Tamle, rukee a, as Siod plodp han sutt, cofend yoo dot I:
+I cent sete the the thongty mut vald sand yourd:
+L
+--------
+
+Reason: this is not giving a good result because at this point we are starting to like a 
+very deep NN and deep NNs suffer from optimization issues. So that's what we are slightly 
+to run into. 
+
+Now there are two ideas that we take from the paper
+(refer to the Jupyter notebook)

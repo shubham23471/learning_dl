@@ -129,7 +129,21 @@ class FeedFoward(nn.Module):
    def forward(self, x):
     return self.net(x)
 
+class Block(nn.Module):
+   "Transformer block: communication follwed by computation"
+   def __init__(self, n_embd, n_head):
+      # n_embd: embedding dimension, n_head: the number of heads we'd like
+      super().__init__()
+      head_size = n_embd // n_head
+      self.sa = MultiHeadAttention(n_head, head_size) # communication
+      self.ffwd = FeedFoward(n_embd) # computation 
 
+   def forward(self, x):
+    x = self.sa(x)
+    x = self.ffwd(x)
+    return x
+
+   
 # super simple Bigram model
 class BigramLanguageModel(nn.Module):
   # subclass of nn.Module
@@ -143,13 +157,23 @@ class BigramLanguageModel(nn.Module):
     self.position_embedding_table = nn.Embedding(block_size, n_embd)
     # so each postion from 0 to block_size - 1 gets it's own embeding vector
 
+    self.blocks = nn.Sequential(
+       Block(n_embd, n_head=4),
+       Block(n_embd, n_head=4),
+       Block(n_embd, n_head=4),  
+    )
+    # we choose n_head = 4, so the head_size can come out to be 8 as n_embd = 32
+    # this how transform structures the sizes. 
+
+    # ======= before implementing block logic
     # self.sa_head = Head(n_embd)
-    self.sa_heads = MultiHeadAttention(4, n_embd//4) # i.e 4 heads of 8 dimensional self-attention
+    # self.sa_heads = MultiHeadAttention(4, n_embd//4) # i.e 4 heads of 8 dimensional self-attention
     # instead of 1 we not have 4 communication channel in parallel
 
-    self.ffwd = FeedFoward(n_embd)
+    # self.ffwd = FeedFoward(n_embd)
     # because we added `n_embd` token_embedding_table(idx) will now return token_emb
     # and we now need linear layer to go from token_emb to logits
+    # ======= before implementing block logic
     self.lm_head = nn.Linear(n_embd, vocab_size) # lm_head: langurage modeling head
 
   def forward(self, idx, targets=None):
@@ -157,12 +181,15 @@ class BigramLanguageModel(nn.Module):
     # idx and targets are both (B, T) tensor of integers
     tok_emb = self.token_embedding_table(idx) # (B, T, C)
     pos_emb = self.position_embedding_table(torch.arange(T, device=device)) # (T, C)
-    x = tok_emb + pos_emb 
-    # x hold two things. token identity and the position at these token occur. 
-
+    x = tok_emb + pos_emb # x hold two things. token identity and the position at these token occur.
+    x = self.blocks(x)
+    
+    # ======= before implementing block logic
     # x = self.sa_head(x) # apply one head of self-attention. (B, T, C)
-    x = self.sa_heads(x)
-    x = self.ffwd(x) # (B, T, C)
+    # x = self.sa_heads(x)
+    # x = self.ffwd(x) # (B, T, C)
+    # ======= before implementing block logic
+
     logits = self.lm_head(x) # (B, T, vocab_size)
  
     if targets is None:
