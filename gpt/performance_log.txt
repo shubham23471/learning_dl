@@ -128,3 +128,32 @@ to run into.
 
 Now there are two ideas that we take from the paper
 (refer to the Jupyter notebook)
+
+
+======================================================
+            After residual connection
+======================================================
+Using :cpu
+step 0: train loss 4.6255, val loss 4.6233
+step 500: train loss 2.3882, val loss 2.3850
+step 1000: train loss 2.2704, val loss 2.2690
+step 1500: train loss 2.1881, val loss 2.2103
+step 2000: train loss 2.1456, val loss 2.1827
+step 2500: train loss 2.1069, val loss 2.1541
+step 3000: train loss 2.0695, val loss 2.1437
+step 3500: train loss 2.0625, val loss 2.1203
+step 4000: train loss 2.0281, val loss 2.1137
+step 4500: train loss 2.0043, val loss 2.1024
+--------
+
+
+WIRICHARD RI:
+Ay lad xobly of Eus, was ames
+To do the adteeds prot am'd do coungs
+Thereselss, yir should, wome Plove Gad brothen doward it thim the a will for, thy for-Mirkis dease, eit of I suels ardot, wiffell king daulywell I may we duse adied, seeving.
+With's a singure what at your murderw:
+Clo
+--------
+**OBSERVATIONS**
+As you notice here the training loss is getting ahead of validation loss (in the graph form. which means tr loss is getting smaller)
+so we started to see like a little bit of overfitting 

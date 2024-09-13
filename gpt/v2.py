@@ -114,18 +114,30 @@ class MultiHeadAttention(nn.Module):
   def __init__(self, num_heads, head_size):
       super().__init__()
       self.heads = nn.ModuleList([Head(head_size) for _ in range(num_heads)])
+      # projections : are the part of implementing the residuals
+      self.proj = nn.Linear(n_embd, n_embd)
   
   def forward(self, x):
-      return torch.cat([h(x) for h  in self.heads], dim=-1) # concat over C dim
+      out = torch.cat([h(x) for h  in self.heads], dim=-1) # concat over C dim
+      out = self.proj(out) # here we apply the projection on the output of self-attention
+      # so if you think, projection is just the linear transformation of this layer
+      # so this project layer going back to the residual pathway
+      return out 
 
 class FeedFoward(nn.Module):
    """ a simple linear layer followed by a non-linearity"""
    def __init__(self, n_embd):
       super().__init__()
       self.net = nn.Sequential(
-         nn.Linear(n_embd, n_embd),
+         # why multiply by 4 ??
+         # if you look at the paper. 3.3 Position-wise ffwd network  
+         # the dim of input(2048) and output(512): so there a multipler of 4
+         # so the innear layer of ffwd Netork should be multiply by 4 in term of channel sizes
+         nn.Linear(n_embd, 4 * n_embd),
          nn.ReLU(),
+         nn.Linear(4 * n_embd, n_embd),
       )
+    # the second nn.Linear(n_embd, n_embd) is the projection layer going back to the pathway
    def forward(self, x):
     return self.net(x)
 
@@ -139,8 +151,8 @@ class Block(nn.Module):
       self.ffwd = FeedFoward(n_embd) # computation 
 
    def forward(self, x):
-    x = self.sa(x)
-    x = self.ffwd(x)
+    x = x + self.sa(x) # x + part are the residual connections
+    x = x + self.ffwd(x)
     return x
 
    
