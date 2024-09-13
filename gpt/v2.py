@@ -118,6 +118,17 @@ class MultiHeadAttention(nn.Module):
   def forward(self, x):
       return torch.cat([h(x) for h  in self.heads], dim=-1) # concat over C dim
 
+class FeedFoward(nn.Module):
+   """ a simple linear layer followed by a non-linearity"""
+   def __init__(self, n_embd):
+      super().__init__()
+      self.net = nn.Sequential(
+         nn.Linear(n_embd, n_embd),
+         nn.ReLU(),
+      )
+   def forward(self, x):
+    return self.net(x)
+
 
 # super simple Bigram model
 class BigramLanguageModel(nn.Module):
@@ -136,6 +147,7 @@ class BigramLanguageModel(nn.Module):
     self.sa_heads = MultiHeadAttention(4, n_embd//4) # i.e 4 heads of 8 dimensional self-attention
     # instead of 1 we not have 4 communication channel in parallel
 
+    self.ffwd = FeedFoward(n_embd)
     # because we added `n_embd` token_embedding_table(idx) will now return token_emb
     # and we now need linear layer to go from token_emb to logits
     self.lm_head = nn.Linear(n_embd, vocab_size) # lm_head: langurage modeling head
@@ -150,7 +162,8 @@ class BigramLanguageModel(nn.Module):
 
     # x = self.sa_head(x) # apply one head of self-attention. (B, T, C)
     x = self.sa_heads(x)
-    logits = self.lm_head(x) # (B, T, vocab_si ze)
+    x = self.ffwd(x) # (B, T, C)
+    logits = self.lm_head(x) # (B, T, vocab_size)
  
     if targets is None:
       loss = None

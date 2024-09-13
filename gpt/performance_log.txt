@@ -39,8 +39,9 @@ DWAR: us,
 Wte hse
 --------
 
-===========================
-Multi-head self attention
+======================================================
+            Multi-head self attention
+======================================================
 Using :cpu
 step 0: train loss 4.2227, val loss 4.2226
 step 500: train loss 2.6592, val loss 2.6733
@@ -65,4 +66,33 @@ Bardageplftisto be ess the to hon;
 Soretr ice we bay, Thouthe wome isspe, laveberis I fald
 Sy,
 Whissitill there git; the se
+--------
+
+
+======================================================
+            Feed-forward
+======================================================
+Using :cpu
+step 0: train loss 4.1996, val loss 4.1995
+step 500: train loss 2.5993, val loss 2.6077
+step 1000: train loss 2.4629, val loss 2.4651
+step 1500: train loss 2.3974, val loss 2.3951
+step 2000: train loss 2.3297, val loss 2.3470
+step 2500: train loss 2.3018, val loss 2.3221
+step 3000: train loss 2.2828, val loss 2.2936
+step 3500: train loss 2.2495, val loss 2.2721
+step 4000: train loss 2.2435, val loss 2.2468
+step 4500: train loss 2.2286, val loss 2.2411
+--------
+
+Ba hil thill shat coo he hot mes fin.
+
+Cy hirad I four shat son yald hat lods guk- have ave lithr
+GLOull
+Wllld, with.
+
+BANTAUCHAR:
+I ork sak's willl eger aepale ganed ay wouce
+song thy in noduace being uliths tot upiord--mard meme the fles,
+Tharr, leanven-ty's thy on it in weancepte, digus I the sou
 --------
