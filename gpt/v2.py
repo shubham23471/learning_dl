@@ -109,6 +109,16 @@ class Head(nn.Module):
      out = wei @ v # (B, T, T) @ (B, T, C) --> (B, T, C)
      return out
 
+class MultiHeadAttention(nn.Module):
+  "multiuple heads of self=attenstion in parallel"
+  def __init__(self, num_heads, head_size):
+      super().__init__()
+      self.heads = nn.ModuleList([Head(head_size) for _ in range(num_heads)])
+  
+  def forward(self, x):
+      return torch.cat([h(x) for h  in self.heads], dim=-1) # concat over C dim
+
+
 # super simple Bigram model
 class BigramLanguageModel(nn.Module):
   # subclass of nn.Module
@@ -122,7 +132,9 @@ class BigramLanguageModel(nn.Module):
     self.position_embedding_table = nn.Embedding(block_size, n_embd)
     # so each postion from 0 to block_size - 1 gets it's own embeding vector
 
-    self.sa_head = Head(n_embd)
+    # self.sa_head = Head(n_embd)
+    self.sa_heads = MultiHeadAttention(4, n_embd//4) # i.e 4 heads of 8 dimensional self-attention
+    # instead of 1 we not have 4 communication channel in parallel
 
     # because we added `n_embd` token_embedding_table(idx) will now return token_emb
     # and we now need linear layer to go from token_emb to logits
@@ -136,7 +148,8 @@ class BigramLanguageModel(nn.Module):
     x = tok_emb + pos_emb 
     # x hold two things. token identity and the position at these token occur. 
 
-    x = self.sa_head(x) # apply one head of self-attention. (B, T, C)
+    # x = self.sa_head(x) # apply one head of self-attention. (B, T, C)
+    x = self.sa_heads(x)
     logits = self.lm_head(x) # (B, T, vocab_si ze)
  
     if targets is None:

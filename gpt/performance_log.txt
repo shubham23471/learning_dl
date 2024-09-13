@@ -38,3 +38,31 @@ Me hallil:
 DWAR: us,
 Wte hse
 --------
+
+===========================
+Multi-head self attention
+Using :cpu
+step 0: train loss 4.2227, val loss 4.2226
+step 500: train loss 2.6592, val loss 2.6733
+step 1000: train loss 2.4980, val loss 2.5064
+step 1500: train loss 2.4291, val loss 2.4349
+step 2000: train loss 2.3716, val loss 2.3844
+step 2500: train loss 2.3417, val loss 2.3561
+step 3000: train loss 2.3149, val loss 2.3347
+step 3500: train loss 2.2918, val loss 2.3171
+step 4000: train loss 2.2895, val loss 2.2868
+step 4500: train loss 2.2748, val loss 2.2858
+--------
+
+We! le ises.
+Wmay they row we thutinte Caldd shou mait tiertlentthens the the dol ede cksy ba? Wlouby arceckentisste wre
+G'imemonot mar ef hacr
+COngd Go mringt thouskiu?
+
+Fre.
+
+Bardageplftisto be ess the to hon;
+Soretr ice we bay, Thouthe wome isspe, laveberis I fald
+Sy,
+Whissitill there git; the se
+--------
