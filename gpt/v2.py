@@ -149,10 +149,18 @@ class Block(nn.Module):
       head_size = n_embd // n_head
       self.sa = MultiHeadAttention(n_head, head_size) # communication
       self.ffwd = FeedFoward(n_embd) # computation 
+      # size of layer norm is 32 
+      #  so when the layernorm is normalizing our features, 
+      # the mean and variance is taken over 32 numbers. so the batch and time act as 
+      # batch dimensions both of them.So, this is like a per token normalization that just 
+      # normalize the features 
+      self.ln1 = nn.LayerNorm(n_embd)
+      self.ln2 = nn.LayerNorm(n_embd)
 
    def forward(self, x):
-    x = x + self.sa(x) # x + part are the residual connections
-    x = x + self.ffwd(x)
+    # layer norm applied on x before it goes into self attention and feed forward
+    x = x + self.sa(self.ln1(x)) # x + part are the residual connections
+    x = x + self.ffwd(self.ln2(x))
     return x
 
    
@@ -172,7 +180,8 @@ class BigramLanguageModel(nn.Module):
     self.blocks = nn.Sequential(
        Block(n_embd, n_head=4),
        Block(n_embd, n_head=4),
-       Block(n_embd, n_head=4),  
+       Block(n_embd, n_head=4), 
+       nn.LayerNorm(n_embd), 
     )
     # we choose n_head = 4, so the head_size can come out to be 8 as n_embd = 32
     # this how transform structures the sizes. 

@@ -157,3 +157,38 @@ Clo
 **OBSERVATIONS**
 As you notice here the training loss is getting ahead of validation loss (in the graph form. which means tr loss is getting smaller)
 so we started to see like a little bit of overfitting 
+
+======================================================
+            After Layer norm
+======================================================
+Using :cpu
+step 0: train loss 4.3103, val loss 4.3097
+step 500: train loss 2.4001, val loss 2.4010
+step 1000: train loss 2.2644, val loss 2.2663
+step 1500: train loss 2.1664, val loss 2.1896
+step 2000: train loss 2.1321, val loss 2.1685
+step 2500: train loss 2.0805, val loss 2.1298
+step 3000: train loss 2.0506, val loss 2.1243
+step 3500: train loss 2.0443, val loss 2.1045
+step 4000: train loss 2.0143, val loss 2.0942
+step 4500: train loss 1.9946, val loss 2.0988
+--------
+
+
+WIVIXANUS:
+Tall catt xobly of know,
+andames
+To do to hath, of proolam'd rouch honow? EDWIUS:
+Tyir should, wom, Pleev Gill but come hads it thight:
+As will for, thy a greiars for quere thous of you mudot, wiff chake gread
+ywall; man.
+
+CORIOSAUS: Murdy him,
+Asit,
+You sile,
+I what at your mus sow:
+Cow
+--------
+**OBSERVATIONS**
+- loss is down from 2.1024 to 2.0988. so slight improvement after adding the batch norm. 
+- They will help more if we have bigger and deeper network 
